@@ -11,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ProjektWebApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProjektWebApi
 {
@@ -32,6 +34,8 @@ namespace ProjektWebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjektWebApi", Version = "v1" });
             });
+            services.AddDbContext<ApplicationDbContext>(options => 
+            options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
