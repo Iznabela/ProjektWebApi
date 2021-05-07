@@ -12,7 +12,7 @@ namespace ProjektWebApi
 {
     public class Authentication : AuthenticationHandler<AuthenticationSchemeOptions>
     {
-        private readonly Context _context;
+        private readonly ApplicationDbContext _context;
 
         public Authentication(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
