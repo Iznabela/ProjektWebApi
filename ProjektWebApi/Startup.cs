@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProjektWebApi.Data;
 using Microsoft.EntityFrameworkCore;
+using ProjektWebApi.Models;
 
 namespace ProjektWebApi
 {
@@ -36,6 +37,9 @@ namespace ProjektWebApi
             });
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
+
+            services.AddDefaultIdentity<MyUser>(options =>
+            options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DbContext>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
