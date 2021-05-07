@@ -39,9 +39,8 @@ namespace ProjektWebApi
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
 
-            services.AddDeIdentity<MyUser>(options =>
-            options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<MyUser>(options =>
+            options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DbContext>();
 
             services.AddAuthentication("MyAuthScheme")
               .AddScheme<AuthenticationSchemeOptions, Authentication>("MyAuthScheme", null);
