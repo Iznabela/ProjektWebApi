@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -38,8 +39,12 @@ namespace ProjektWebApi
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
 
-            services.AddDefaultIdentity<MyUser>(options =>
-            options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DbContext>();
+            services.AddDeIdentity<MyUser>(options =>
+            options.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddAuthentication("MyAuthScheme")
+              .AddScheme<AuthenticationSchemeOptions, Authentication>("MyAuthScheme", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,6 +62,8 @@ namespace ProjektWebApi
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints =>
             {
