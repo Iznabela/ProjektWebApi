@@ -42,8 +42,8 @@ namespace ProjektWebApi
             services.AddDefaultIdentity<MyUser>(options =>
             options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DbContext>();
 
-            services.AddAuthentication("MyAuthScheme")
-              .AddScheme<AuthenticationSchemeOptions, Authentication>("MyAuthScheme", null);
+            services.AddAuthentication("MyAuth")
+              .AddScheme<AuthenticationSchemeOptions, Authentication>("MyAuth", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
