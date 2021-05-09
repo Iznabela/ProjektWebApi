@@ -10,8 +10,8 @@ using ProjektWebApi.Data;
 namespace ProjektWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210509184135_initial")]
-    partial class initial
+    [Migration("20210509192431_uno")]
+    partial class uno
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
