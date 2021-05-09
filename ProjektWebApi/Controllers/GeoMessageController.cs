@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ProjektWebApi.Data;
 using ProjektWebApi.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProjektWebApi.Controllers
 {
@@ -20,25 +21,47 @@ namespace ProjektWebApi.Controllers
             _context = context;
         }
 
+        [Route("GetGeoMessage")]
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
         {
-            if(id == null)
-            {
-                return NotFound();
-            }
-
             try
             {
                 GeoMessage geoMessage = await _context.GeoMessages.FindAsync(id);
-                return Ok(geoMessage);
+                if (geoMessage != null)
+                {
+                    return Ok(geoMessage);
+                }
             }
-            catch
+            catch (Exception exception)
             {
-                return NotFound();
+                return BadRequest(exception.Message);
             }
+
+            return NotFound();
+        }
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
+        {
+            try
+            {
+                ICollection<GeoMessage> geoMessages = await _context.GeoMessages.ToListAsync();
+                if (geoMessages != null)
+                {
+                    return Ok(geoMessages);
+                }
+            }
+            catch (Exception exception)
+            {
+                return BadRequest(exception.Message);
+            }
+
+            return NotFound();
         }
 
         [Route("CreateGeoMessage")]
@@ -52,13 +75,12 @@ namespace ProjektWebApi.Controllers
                 return BadRequest();
             }
 
-            GeoMessage geoMessage = new GeoMessage();
-            geoMessage.Message = newGeoMessage.Message;
-            geoMessage.Latitude = newGeoMessage.Latitude;
-            geoMessage.Longitude = newGeoMessage.Longitude;
-
             try
             {
+                GeoMessage geoMessage = new GeoMessage();
+                geoMessage.Message = newGeoMessage.Message;
+                geoMessage.Latitude = newGeoMessage.Latitude;
+                geoMessage.Longitude = newGeoMessage.Longitude;
                 await _context.GeoMessages.AddAsync(newGeoMessage);
                 await _context.SaveChangesAsync();
                 return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
