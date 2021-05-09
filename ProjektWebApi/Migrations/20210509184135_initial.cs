@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ProjektWebApi.Migrations
 {
-    public partial class usertabell : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -47,6 +47,21 @@ namespace ProjektWebApi.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GeoMessage",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GeoMessage", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -155,11 +170,6 @@ namespace ProjektWebApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "Token", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "e5054eac-cc5c-45d4-a8b0-716042e02f8b", 0, "d9253989-4593-4e5e-9a43-57a390d444d7", null, false, "Test", "Testsson", false, null, null, null, null, null, false, "f63510d8-a7b2-4173-80ec-7f08aed9eabe", null, false, "TestUser" });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -216,6 +226,9 @@ namespace ProjektWebApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "GeoMessage");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
