@@ -112,15 +112,13 @@ namespace ProjektWebApi.Controllers
 
                 try
                 {
-                    MyUser newuser = new MyUser
-                    {
-                        FirstName = firstName,
-                        LastName = lastName,
-                        UserName = userName
-                    };
-                    await _userManager.CreateAsync(newuser, password);
-                    await _context.AddAsync(newuser);
-                    await _context.SaveChangesAsync();
+                    MyUser newUser = new MyUser();
+                    newUser.FirstName = firstName;
+                    newUser.LastName = lastName;
+                    newUser.UserName = userName;
+                    newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, password);
+
+                    await _userManager.CreateAsync(newUser);
 
                     return Ok();
 
@@ -218,7 +216,6 @@ namespace ProjektWebApi.Controllers
                         UserName = userName
                     };
                     await _userManager.CreateAsync(newuser, password);
-                    await _context.AddAsync(newuser);
                     await _context.SaveChangesAsync();
 
                     return Ok();
