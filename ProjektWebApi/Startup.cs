@@ -56,13 +56,20 @@ namespace ProjektWebApi
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjektWebApi v1"));
             }
 
+            app.UseCors(options => options
+                .SetIsOriginAllowed(origin => true)
+                .AllowCredentials()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                );
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
-
             app.UseAuthentication();
+
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
