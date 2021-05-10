@@ -38,7 +38,6 @@ namespace ProjektWebApi
                 o.DefaultApiVersion = new ApiVersion(2, 0);
                 o.AssumeDefaultVersionWhenUnspecified = true;
                 o.ReportApiVersions = true;
-                o.ApiVersionReader = new QueryStringApiVersionReader("v");
             });
 
             services.AddVersionedApiExplorer(o =>
