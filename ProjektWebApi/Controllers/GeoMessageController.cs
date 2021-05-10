@@ -96,8 +96,7 @@ namespace ProjektWebApi.Controllers
 
         [Route("RegisterUser")]
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+  
         public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
         {
             if (String.IsNullOrWhiteSpace(userName))
@@ -107,13 +106,16 @@ namespace ProjektWebApi.Controllers
 
             try
             {
-                MyUser newUser = new MyUser();
-                newUser.FirstName = firstName;
-                newUser.LastName = lastName;
-                newUser.UserName = userName;
-                newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, password);
+                MyUser newuser = new MyUser
 
-                await _userManager.CreateAsync(newUser);
+                    {
+                     FirstName = firstName,
+                     LastName = lastName,
+                     UserName = userName
+                    };
+                await _userManager.CreateAsync(newuser, password);
+                await _context.AddAsync(newuser);
+                await _context.SaveChangesAsync();
 
                 return Ok();
 
