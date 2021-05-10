@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using ProjektWebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using ProjektWebApi.Models;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace ProjektWebApi
 {
@@ -32,9 +33,24 @@ namespace ProjektWebApi
         {
 
             services.AddControllers();
+            services.AddApiVersioning(o =>
+            {
+                o.DefaultApiVersion = new ApiVersion(2, 0);
+                o.AssumeDefaultVersionWhenUnspecified = true;
+                o.ReportApiVersions = true;
+                o.ApiVersionReader = new QueryStringApiVersionReader("v");
+            });
+
+            services.AddVersionedApiExplorer(o =>
+            {
+                o.GroupNameFormat = "'v'VVV";
+                o.SubstituteApiVersionInUrl = true;
+            });
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjektWebApi", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjektWebApi", Version = "v1.0" });
+                c.SwaggerDoc("v2", new OpenApiInfo { Title = "ProjektWebApi", Version = "v2.0" });
             });
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
@@ -53,8 +69,13 @@ namespace ProjektWebApi
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjektWebApi v1"));
+                app.UseSwaggerUI(o =>
+                {
+                    o.SwaggerEndpoint("/swagger/v1/swagger.json", "ProjektWebApi v1.0");
+                    o.SwaggerEndpoint("/swagger/v2/swagger.json", "ProjektWebApi v2.0");
+                });
             }
+
 
             app.UseCors(options => options
                 .SetIsOriginAllowed(origin => true)

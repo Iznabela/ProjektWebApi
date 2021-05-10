@@ -16,14 +16,13 @@ namespace ProjektWebApi.Data
         {
         }
 
-        public DbSet<GeoMessage> GeoMessages { get; set; }
+        public DbSet<Models.V1.GeoMessage> GeoMessages { get; set; }
+        public DbSet<Models.V2.GeoMessageV2> GeoMessagesV2 { get; set; }
         public DbSet<MyUser> MyUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<GeoMessage>().ToTable("GeoMessage");
-           
         }
 
       

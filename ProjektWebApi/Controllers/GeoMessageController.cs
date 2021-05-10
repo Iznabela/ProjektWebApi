@@ -8,121 +8,128 @@ using ProjektWebApi.Data;
 using ProjektWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using ProjektWebApi.Models.V1;
+using ProjektWebApi.Models.V2;
 
 namespace ProjektWebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class GeoMessageController : ControllerBase
+    namespace V1
     {
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<MyUser> _userManager;
-
-        public GeoMessageController(ApplicationDbContext context, UserManager<MyUser> userManager)
+        [Route("api/[controller]")]
+        [ApiController]
+        [ApiVersion("1.0")]
+        public class GeoMessageController : ControllerBase
         {
-            _context = context;
-            _userManager = userManager;
-        }
+            private readonly ApplicationDbContext _context;
+            private readonly UserManager<MyUser> _userManager;
 
-        [Route("GetGeoMessage")]
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
-        {
-            try
+            public GeoMessageController(ApplicationDbContext context, UserManager<MyUser> userManager)
             {
-                GeoMessage geoMessage = await _context.GeoMessages.FindAsync(id);
-                if (geoMessage != null)
+                _context = context;
+                _userManager = userManager;
+            }
+
+            [Route("GetGeoMessage")]
+            [HttpGet]
+            [ProducesResponseType(StatusCodes.Status200OK)]
+            [ProducesResponseType(StatusCodes.Status404NotFound)]
+            public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
+            {
+                try
                 {
-                    return Ok(geoMessage);
+                    GeoMessage geoMessage = await _context.GeoMessages.FindAsync(id);
+                    if (geoMessage != null)
+                    {
+                        return Ok(geoMessage);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(exception.Message);
+                }
+
+                return NotFound();
+            }
+
+            [HttpGet]
+            [ProducesResponseType(StatusCodes.Status200OK)]
+            [ProducesResponseType(StatusCodes.Status404NotFound)]
+            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
+            {
+                try
+                {
+                    ICollection<GeoMessage> geoMessages = await _context.GeoMessages.ToListAsync();
+                    if (geoMessages != null)
+                    {
+                        return Ok(geoMessages);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(exception.Message);
+                }
+
+                return NotFound();
+            }
+
+            [Authorize]
+            [Route("CreateGeoMessage")]
+            [HttpPost]
+            [ProducesResponseType(StatusCodes.Status201Created)]
+            [ProducesResponseType(StatusCodes.Status400BadRequest)]
+            public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
+            {
+                if (String.IsNullOrWhiteSpace(newGeoMessage.Message))
+                {
+                    return BadRequest();
+                }
+
+                try
+                {
+                    Models.V1.GeoMessage geoMessage = new Models.V1.GeoMessage();
+                    geoMessage.Message = newGeoMessage.Message;
+                    geoMessage.Latitude = newGeoMessage.Latitude;
+                    geoMessage.Longitude = newGeoMessage.Longitude;
+                    await _context.GeoMessages.AddAsync(newGeoMessage);
+                    await _context.SaveChangesAsync();
+                    return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
+                }
+                catch
+                {
+                    return BadRequest();
                 }
             }
-            catch (Exception exception)
-            {
-                return BadRequest(exception.Message);
-            }
 
-            return NotFound();
-        }
-
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
-        {
-            try
+            [Route("RegisterUser")]
+            [HttpPost]
+            public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
             {
-                ICollection<GeoMessage> geoMessages = await _context.GeoMessages.ToListAsync();
-                if (geoMessages != null)
+                if (String.IsNullOrWhiteSpace(userName))
                 {
-                    return Ok(geoMessages);
+                    return BadRequest();
                 }
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(exception.Message);
-            }
 
-            return NotFound();
-        }
-
-        [Route("CreateGeoMessage")]
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
-        {
-            if (String.IsNullOrWhiteSpace(newGeoMessage.Message))
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                GeoMessage geoMessage = new GeoMessage();
-                geoMessage.Message = newGeoMessage.Message;
-                geoMessage.Latitude = newGeoMessage.Latitude;
-                geoMessage.Longitude = newGeoMessage.Longitude;
-                await _context.GeoMessages.AddAsync(newGeoMessage);
-                await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-
-        [Route("RegisterUser")]
-        [HttpPost]
-  
-        public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
-        {
-            if (String.IsNullOrWhiteSpace(userName))
-            {
-                return BadRequest();
-            }
-
-            try
-            {
-                MyUser newuser = new MyUser
+                try
+                {
+                    MyUser newuser = new MyUser
 
                     {
-                     FirstName = firstName,
-                     LastName = lastName,
-                     UserName = userName
+                        FirstName = firstName,
+                        LastName = lastName,
+                        UserName = userName
                     };
-                await _userManager.CreateAsync(newuser, password);
-                await _context.AddAsync(newuser);
-                await _context.SaveChangesAsync();
+                    await _userManager.CreateAsync(newuser, password);
+                    await _context.AddAsync(newuser);
+                    await _context.SaveChangesAsync();
 
-                return Ok();
+                    return Ok();
 
-            }
-            catch (Exception exception)
-            {
-                return BadRequest(exception.Message);
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(exception.Message);
+                }
             }
         }
     }

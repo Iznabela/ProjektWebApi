@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjektWebApi.Models
+namespace ProjektWebApi.Models.V2
 {
-    public class GeoMessage
+    public class GeoMessageV2
     {
         public int Id { get; set; }
-        public string Message { get; set; }
+        public Message Message { get; set; }
         public double Longitude { get; set; }
         public double Latitude { get; set; }
     }
