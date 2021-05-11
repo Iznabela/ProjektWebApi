@@ -16,6 +16,15 @@ namespace ProjektWebApi.Controllers
 {
     namespace V1
     {
+
+        public class GeoMassageDTO
+        {
+            public int Id { get; set; }
+            public string Message { get; set; }
+            public double Longitude { get; set; }
+            public double Latitude { get; set; }
+        }
+
         [Route("api/v{version:apiVersion}/[controller]")]
         [ApiController]
         [ApiVersion("1.0")]
@@ -151,7 +160,7 @@ namespace ProjektWebApi.Controllers
             [HttpGet]
             [ProducesResponseType(StatusCodes.Status200OK)]
             [ProducesResponseType(StatusCodes.Status404NotFound)]
-            public async Task<ActionResult<GeoMessageV2>> GetGeoMessage(int? id)
+            public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
                 try
                 {
@@ -174,7 +183,7 @@ namespace ProjektWebApi.Controllers
             [HttpPost]
             [ProducesResponseType(StatusCodes.Status201Created)]
             [ProducesResponseType(StatusCodes.Status400BadRequest)]
-            public async Task<IActionResult> CreateGeoMessage(GeoMessageV2 newGeoMessage)
+            public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
             {
                 if (String.IsNullOrWhiteSpace(newGeoMessage.Message.Title))
                 {
@@ -183,7 +192,7 @@ namespace ProjektWebApi.Controllers
 
                 try
                 {
-                    var geoMessage = new GeoMessageV2();
+                    var geoMessage = new GeoMessage();
                     geoMessage.Message = newGeoMessage.Message;
                     geoMessage.Latitude = newGeoMessage.Latitude;
                     geoMessage.Longitude = newGeoMessage.Longitude;

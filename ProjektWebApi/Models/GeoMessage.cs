@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ProjektWebApi.Models.V2
 {
-    public class GeoMessageV2
+    public class GeoMessage
     {
         public int Id { get; set; }
         public Message Message { get; set; }
