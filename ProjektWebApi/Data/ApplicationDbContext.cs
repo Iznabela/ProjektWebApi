@@ -16,8 +16,7 @@ namespace ProjektWebApi.Data
         {
         }
 
-        public DbSet<Models.V1.GeoMessage> GeoMessages { get; set; }
-        public DbSet<Models.V2.GeoMessage> GeoMessagesV2 { get; set; }
+        public DbSet<GeoMessage> GeoMessages { get; set; }
         public DbSet<MyUser> MyUsers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

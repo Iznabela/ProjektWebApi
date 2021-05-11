@@ -9,22 +9,11 @@ using ProjektWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
-using ProjektWebApi.Models.V1;
-using ProjektWebApi.Models.V2;
 
 namespace ProjektWebApi.Controllers
 {
     namespace V1
     {
-
-        public class GeoMassageDTO
-        {
-            public int Id { get; set; }
-            public string Message { get; set; }
-            public double Longitude { get; set; }
-            public double Latitude { get; set; }
-        }
-
         [Route("api/v{version:apiVersion}/[controller]")]
         [ApiController]
         [ApiVersion("1.0")]
@@ -39,10 +28,16 @@ namespace ProjektWebApi.Controllers
                 _userManager = userManager;
             }
 
+            public class GeoMassageDTO
+            {
+                public int Id { get; set; }
+                public string Message { get; set; }
+                public double Longitude { get; set; }
+                public double Latitude { get; set; }
+            }
+
             [Route("GetGeoMessage")]
             [HttpGet]
-            [ProducesResponseType(StatusCodes.Status200OK)]
-            [ProducesResponseType(StatusCodes.Status404NotFound)]
             public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
                 try
@@ -62,8 +57,6 @@ namespace ProjektWebApi.Controllers
             }
 
             [HttpGet]
-            [ProducesResponseType(StatusCodes.Status200OK)]
-            [ProducesResponseType(StatusCodes.Status404NotFound)]
             public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
             {
                 try
@@ -85,9 +78,7 @@ namespace ProjektWebApi.Controllers
             [Authorize]
             [Route("CreateGeoMessage")]
             [HttpPost]
-            [ProducesResponseType(StatusCodes.Status201Created)]
-            [ProducesResponseType(StatusCodes.Status400BadRequest)]
-            public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
+            public async Task<IActionResult> CreateGeoMessage(GeoMassageDTO newGeoMessage)
             {
                 if (String.IsNullOrWhiteSpace(newGeoMessage.Message))
                 {
@@ -97,10 +88,11 @@ namespace ProjektWebApi.Controllers
                 try
                 {
                     var geoMessage = new GeoMessage();
-                    geoMessage.Message = newGeoMessage.Message;
+                    var message = new Message { Title = "Default Title", Author = "Default Namn", Body = newGeoMessage.Message };
+                    geoMessage.Message = message;
                     geoMessage.Latitude = newGeoMessage.Latitude;
                     geoMessage.Longitude = newGeoMessage.Longitude;
-                    await _context.GeoMessages.AddAsync(newGeoMessage);
+                    await _context.GeoMessages.AddAsync(geoMessage);
                     await _context.SaveChangesAsync();
                     return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
                 }
@@ -164,7 +156,7 @@ namespace ProjektWebApi.Controllers
             {
                 try
                 {
-                    var geoMessage = await _context.GeoMessagesV2.ToListAsync();
+                    var geoMessage = await _context.GeoMessages.ToListAsync();
                     if (geoMessage != null)
                     {
                         return Ok(geoMessage);
@@ -179,13 +171,13 @@ namespace ProjektWebApi.Controllers
             }
 
             [HttpGet]
-            public async Task<ActionResult<ICollection<GeoMessageV2>>> GetGeoMessages(double? minLon, double? minLat, double? maxLon, double? maxLat)
+            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages(double? minLon, double? minLat, double? maxLon, double? maxLat)
             {
                 try
                 {
                     if (minLon == null || minLat == null || maxLon == null || maxLat == null)
                     {
-                        var geoMessages = await _context.GeoMessagesV2.ToListAsync();
+                        var geoMessages = await _context.GeoMessages.ToListAsync();
                         if (geoMessages != null)
                         {
                             return Ok(geoMessages);
@@ -193,7 +185,7 @@ namespace ProjektWebApi.Controllers
                     }
                     else
                     {
-                        var geoMessages = await _context.GeoMessagesV2.Where(g =>
+                        var geoMessages = await _context.GeoMessages.Where(g =>
                             g.Longitude >= minLon &&
                             g.Latitude >= minLat &&
                             g.Longitude <= maxLon &&
@@ -215,8 +207,6 @@ namespace ProjektWebApi.Controllers
             [Authorize]
             [Route("CreateGeoMessage")]
             [HttpPost]
-            [ProducesResponseType(StatusCodes.Status201Created)]
-            [ProducesResponseType(StatusCodes.Status400BadRequest)]
             public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
             {
                 if (String.IsNullOrWhiteSpace(newGeoMessage.Message.Title))
@@ -230,7 +220,7 @@ namespace ProjektWebApi.Controllers
                     geoMessage.Message = newGeoMessage.Message;
                     geoMessage.Latitude = newGeoMessage.Latitude;
                     geoMessage.Longitude = newGeoMessage.Longitude;
-                    await _context.GeoMessagesV2.AddAsync(newGeoMessage);
+                    await _context.GeoMessages.AddAsync(newGeoMessage);
                     await _context.SaveChangesAsync();
                     return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
                 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ProjektWebApi.Models.V2
+namespace ProjektWebApi.Models
 {
     public class GeoMessage
     {
