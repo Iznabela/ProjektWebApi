@@ -68,7 +68,7 @@ namespace ProjektWebApi.Controllers
             {
                 try
                 {
-                    ICollection<GeoMessage> geoMessages = await _context.GeoMessages.ToListAsync();
+                    var geoMessages = await _context.GeoMessages.ToListAsync();
                     if (geoMessages != null)
                     {
                         return Ok(geoMessages);
@@ -168,6 +168,40 @@ namespace ProjektWebApi.Controllers
                     if (geoMessage != null)
                     {
                         return Ok(geoMessage);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    return BadRequest(exception.Message);
+                }
+
+                return NotFound();
+            }
+
+            [HttpGet]
+            public async Task<ActionResult<ICollection<GeoMessageV2>>> GetGeoMessages(double? minLon, double? minLat, double? maxLon, double? maxLat)
+            {
+                try
+                {
+                    if (minLon == null || minLat == null || maxLon == null || maxLat == null)
+                    {
+                        var geoMessages = await _context.GeoMessagesV2.ToListAsync();
+                        if (geoMessages != null)
+                        {
+                            return Ok(geoMessages);
+                        }
+                    }
+                    else
+                    {
+                        var geoMessages = await _context.GeoMessagesV2.Where(g =>
+                            g.Longitude >= minLon &&
+                            g.Latitude >= minLat &&
+                            g.Longitude <= maxLon &&
+                            g.Latitude <= maxLat).ToListAsync();
+                        if (geoMessages != null)
+                        {
+                            return Ok(geoMessages);
+                        }
                     }
                 }
                 catch (Exception exception)
