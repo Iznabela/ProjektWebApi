@@ -9,6 +9,8 @@ using ProjektWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace ProjektWebApi.Controllers
 {
@@ -42,7 +44,8 @@ namespace ProjektWebApi.Controllers
             {
                 try
                 {
-                    var geoMessage = await _context.GeoMessages.FindAsync(id);
+                    var geoMessage = await _context.GeoMessages.Include(g => g.Message).FirstOrDefaultAsync(g => g.Id == id);
+
                     if (geoMessage != null)
                     {
                         return Ok(geoMessage);
@@ -61,7 +64,7 @@ namespace ProjektWebApi.Controllers
             {
                 try
                 {
-                    var geoMessages = await _context.GeoMessages.ToListAsync();
+                    var geoMessages = await _context.GeoMessages.Include(g => g.Message).ToListAsync();
                     if (geoMessages != null)
                     {
                         return Ok(geoMessages);
@@ -87,14 +90,29 @@ namespace ProjektWebApi.Controllers
 
                 try
                 {
-                    var geoMessage = new GeoMessage();
-                    var message = new Message { Title = "Default Title", Author = "Default Namn", Body = newGeoMessage.Message };
-                    geoMessage.Message = message;
-                    geoMessage.Latitude = newGeoMessage.Latitude;
-                    geoMessage.Longitude = newGeoMessage.Longitude;
-                    await _context.GeoMessages.AddAsync(geoMessage);
-                    await _context.SaveChangesAsync();
-                    return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
+                    MyUser user;
+                    var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
+                    var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+                    var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
+                    var username = credentials[0];
+
+                    try
+                    {
+                        user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+
+                        var geoMessage = new GeoMessage();
+                        var message = new Message { Title = "Unknown Title", Author = user.FirstName + " " + user.LastName, Body = newGeoMessage.Message };
+                        geoMessage.Message = message;
+                        geoMessage.Latitude = newGeoMessage.Latitude;
+                        geoMessage.Longitude = newGeoMessage.Longitude;
+                        await _context.GeoMessages.AddAsync(geoMessage);
+                        await _context.SaveChangesAsync();
+                        return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
                 }
                 catch
                 {
@@ -156,7 +174,7 @@ namespace ProjektWebApi.Controllers
             {
                 try
                 {
-                    var geoMessage = await _context.GeoMessages.ToListAsync();
+                    var geoMessage = await _context.GeoMessages.Include(g => g.Message).FirstOrDefaultAsync(g => g.Id == id);
                     if (geoMessage != null)
                     {
                         return Ok(geoMessage);
@@ -177,7 +195,7 @@ namespace ProjektWebApi.Controllers
                 {
                     if (minLon == null || minLat == null || maxLon == null || maxLat == null)
                     {
-                        var geoMessages = await _context.GeoMessages.ToListAsync();
+                        var geoMessages = await _context.GeoMessages.Include(g => g.Message).ToListAsync();
                         if (geoMessages != null)
                         {
                             return Ok(geoMessages);
@@ -189,7 +207,7 @@ namespace ProjektWebApi.Controllers
                             g.Longitude >= minLon &&
                             g.Latitude >= minLat &&
                             g.Longitude <= maxLon &&
-                            g.Latitude <= maxLat).ToListAsync();
+                            g.Latitude <= maxLat).Include(g => g.Message).ToListAsync();
                         if (geoMessages != null)
                         {
                             return Ok(geoMessages);
