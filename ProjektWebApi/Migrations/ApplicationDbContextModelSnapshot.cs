@@ -299,6 +299,23 @@ namespace ProjektWebApi.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "c5b0bb0c-e5a0-4f88-b77e-9f84ba11efa5",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "a780f3db-fc43-4ade-bbf4-ebc790290154",
+                            EmailConfirmed = false,
+                            FirstName = "Test",
+                            LastName = "Testsson",
+                            LockoutEnabled = false,
+                            PasswordHash = "AE3KdPLUMUqzflwOVV0MFGm0C0gZmpvviCKc2CLqIV/woqzvV4nkX7JjkBg/cplg8A==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "c1876dab-9def-4d9b-87b1-9cbfbda83903",
+                            TwoFactorEnabled = false,
+                            UserName = "testuser"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
