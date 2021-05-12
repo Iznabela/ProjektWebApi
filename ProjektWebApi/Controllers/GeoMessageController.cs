@@ -12,12 +12,13 @@ using Microsoft.AspNetCore.Authorization;
 using System.Net.Http.Headers;
 using System.Text;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Security.Claims;
 
 namespace ProjektWebApi.Controllers
 {
     namespace V1
     {
-        [Route("api/v{version:apiVersion}/[controller]")]
+        [Route("api/v{version:apiVersion}/geo-comments")]
         [ApiController]
         [ApiVersion("1.0")]
         public class GeoMessageController : ControllerBase
@@ -39,7 +40,7 @@ namespace ProjektWebApi.Controllers
                 public double Latitude { get; set; }
             }
 
-            [Route("GetGeoMessage")]
+            [Route("{id}")]
             [HttpGet]
             public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
@@ -60,7 +61,6 @@ namespace ProjektWebApi.Controllers
                 return NotFound();
             }
 
-            [Route("GetGeoMessages")]
             [HttpGet]
             public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
             {
@@ -81,7 +81,6 @@ namespace ProjektWebApi.Controllers
             }
 
             [Authorize]
-            [Route("CreateGeoMessage")]
             [HttpPost]
             public async Task<IActionResult> CreateGeoMessage(GeoMassageDTO newGeoMessage)
             {
@@ -92,12 +91,7 @@ namespace ProjektWebApi.Controllers
 
                 try
                 {
-                    MyUser user;
-                    var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-                    var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
-                    var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
-                    var username = credentials[0];
-                    user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+                    var user = await _userManager.GetUserAsync(User);
 
                     try
                     {
@@ -118,34 +112,6 @@ namespace ProjektWebApi.Controllers
                 catch
                 {
                     return Unauthorized();
-                }
-            }
-
-            [Route("RegisterUser")]
-            [HttpPost]
-            public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
-            {
-                if (String.IsNullOrWhiteSpace(userName))
-                {
-                    return BadRequest();
-                }
-
-                try
-                {
-                    MyUser newUser = new MyUser();
-                    newUser.FirstName = firstName;
-                    newUser.LastName = lastName;
-                    newUser.UserName = userName;
-                    newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, password);
-
-                    await _userManager.CreateAsync(newUser);
-
-                    return Ok();
-
-                }
-                catch (Exception exception)
-                {
-                    return BadRequest(exception.Message);
                 }
             }
         }
@@ -173,9 +139,9 @@ namespace ProjektWebApi.Controllers
                 Summary = "Find a geo-message",
                 Description = "Finding a geo-message based on ID"
                 )]
-            [SwaggerResponse(200, "Geo-message based on ID was returned successfully")]
-            [SwaggerResponse(400, "Something went wrong with the request")]
-            [SwaggerResponse(404, "Could not find geo-message with supplied ID")]
+            [SwaggerResponse(200, Description = "Geo-message based on ID was returned successfully")]
+            [SwaggerResponse(400, Description = "Something went wrong with the request")]
+            [SwaggerResponse(404, Description = "Could not find geo-message with supplied ID")]
             public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
                 try
@@ -247,7 +213,7 @@ namespace ProjektWebApi.Controllers
                 Summary = "Create a geo-message",
                 Description = "Creating a geo-message based on specified data - requires authentication"
                 )]
-            [SwaggerResponse(201, "Geo-message was created successfully")]
+            [SwaggerResponse(201, "Geo-message was created successfully", typeof(GeoMessage))]
             [SwaggerResponse(401, "Incorrect username or password")]
             [SwaggerResponse(400, "Something went wrong with the request")]
             public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
@@ -269,7 +235,7 @@ namespace ProjektWebApi.Controllers
                     try
                     {
                         var geoMessage = new GeoMessage();
-                        var message = new Message { Title = newGeoMessage.Message.Title, Author = newGeoMessage.Message.Author, Body = newGeoMessage.Message.Body };
+                        var message = new Message { Title = newGeoMessage.Message.Title, Author = user.FirstName + " " + user.LastName, Body = newGeoMessage.Message.Body };
                         geoMessage.Message = message;
                         geoMessage.Latitude = newGeoMessage.Latitude;
                         geoMessage.Longitude = newGeoMessage.Longitude;
@@ -285,42 +251,6 @@ namespace ProjektWebApi.Controllers
                 else
                 {
                     return Unauthorized();
-                }
-            }
-
-            [Route("RegisterUser")]
-            [HttpPost]
-            [SwaggerOperation(
-                Summary = "Register User",
-                Description = "Registration is required for parts of API"
-                )]
-            [SwaggerResponse(200, "User was registred successfully")]
-            [SwaggerResponse(400, "Something went wrong with the request")]
-            public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
-            {
-                if (String.IsNullOrWhiteSpace(userName))
-                {
-                    return BadRequest();
-                }
-
-                try
-                {
-                    MyUser newuser = new MyUser
-
-                    {
-                        FirstName = firstName,
-                        LastName = lastName,
-                        UserName = userName
-                    };
-                    await _userManager.CreateAsync(newuser, password);
-                    await _context.SaveChangesAsync();
-
-                    return Ok();
-
-                }
-                catch (Exception exception)
-                {
-                    return BadRequest(exception.Message);
                 }
             }
         }
