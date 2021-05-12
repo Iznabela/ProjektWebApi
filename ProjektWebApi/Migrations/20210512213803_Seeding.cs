@@ -13,7 +13,7 @@ namespace ProjektWebApi.Migrations
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "c5b0bb0c-e5a0-4f88-b77e-9f84ba11efa5", 0, "a780f3db-fc43-4ade-bbf4-ebc790290154", null, false, "Test", "Testsson", false, null, null, null, "AE3KdPLUMUqzflwOVV0MFGm0C0gZmpvviCKc2CLqIV/woqzvV4nkX7JjkBg/cplg8A==", null, false, "c1876dab-9def-4d9b-87b1-9cbfbda83903", false, "testuser" });
+                values: new object[] { "0838308e-20b1-49dc-984d-e79e64df3a1d", 0, "15363692-7181-4372-9eaa-8c33aa943332", null, false, "Test", "Testsson", false, null, null, null, "AE5KKzLL1+U4YMEKVVvX/t8oSepjsfxAhwX/GpYvK1PckogPmCMhc+t1CMXZNpTzYg==", null, false, "0198fd72-b697-4ca2-9d82-bf680b3920ec", false, "testuser" });
 
             migrationBuilder.InsertData(
                 table: "Message",
@@ -41,7 +41,7 @@ namespace ProjektWebApi.Migrations
             migrationBuilder.DeleteData(
                 table: "AspNetUsers",
                 keyColumn: "Id",
-                keyValue: "c5b0bb0c-e5a0-4f88-b77e-9f84ba11efa5");
+                keyValue: "0838308e-20b1-49dc-984d-e79e64df3a1d");
 
             migrationBuilder.DeleteData(
                 table: "GeoMessages",

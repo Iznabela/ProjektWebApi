@@ -10,7 +10,7 @@ using ProjektWebApi.Data;
 namespace ProjektWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210512210658_Seeding")]
+    [Migration("20210512213803_Seeding")]
     partial class Seeding
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -305,16 +305,16 @@ namespace ProjektWebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "c5b0bb0c-e5a0-4f88-b77e-9f84ba11efa5",
+                            Id = "0838308e-20b1-49dc-984d-e79e64df3a1d",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a780f3db-fc43-4ade-bbf4-ebc790290154",
+                            ConcurrencyStamp = "15363692-7181-4372-9eaa-8c33aa943332",
                             EmailConfirmed = false,
                             FirstName = "Test",
                             LastName = "Testsson",
                             LockoutEnabled = false,
-                            PasswordHash = "AE3KdPLUMUqzflwOVV0MFGm0C0gZmpvviCKc2CLqIV/woqzvV4nkX7JjkBg/cplg8A==",
+                            PasswordHash = "AE5KKzLL1+U4YMEKVVvX/t8oSepjsfxAhwX/GpYvK1PckogPmCMhc+t1CMXZNpTzYg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "c1876dab-9def-4d9b-87b1-9cbfbda83903",
+                            SecurityStamp = "0198fd72-b697-4ca2-9d82-bf680b3920ec",
                             TwoFactorEnabled = false,
                             UserName = "testuser"
                         });

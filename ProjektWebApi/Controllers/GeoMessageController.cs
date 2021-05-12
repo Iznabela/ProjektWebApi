@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ProjektWebApi.Data;
+using ProjektWebApi.Models;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ProjektWebApi.Data;
-using ProjektWebApi.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Net.Http.Headers;
-using System.Text;
-using Swashbuckle.AspNetCore.Annotations;
-using System.Security.Claims;
 
 namespace ProjektWebApi.Controllers
 {
@@ -34,7 +30,6 @@ namespace ProjektWebApi.Controllers
 
             public class GeoMassageDTO
             {
-                public int Id { get; set; }
                 public string Message { get; set; }
                 public double Longitude { get; set; }
                 public double Latitude { get; set; }
@@ -89,17 +84,23 @@ namespace ProjektWebApi.Controllers
                     return BadRequest();
                 }
 
-                try
-                {
-                    var user = await _userManager.GetUserAsync(User);
+                var user = await _userManager.GetUserAsync(User);
 
+                if (user != null)
+                {
                     try
                     {
-                        var geoMessage = new GeoMessage();
-                        var message = new Message { Title = "Unknown Title", Author = user.FirstName + " " + user.LastName, Body = newGeoMessage.Message };
-                        geoMessage.Message = message;
-                        geoMessage.Latitude = newGeoMessage.Latitude;
-                        geoMessage.Longitude = newGeoMessage.Longitude;
+                        var geoMessage = new GeoMessage
+                        {
+                            Message = new Message
+                            {
+                                Title = "Unknown Title",
+                                Author = user.FirstName + " " + user.LastName,
+                                Body = newGeoMessage.Message
+                            },
+                            Latitude = newGeoMessage.Latitude,
+                            Longitude = newGeoMessage.Longitude
+                        };
                         await _context.GeoMessages.AddAsync(geoMessage);
                         await _context.SaveChangesAsync();
                         return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
@@ -109,10 +110,7 @@ namespace ProjektWebApi.Controllers
                         return BadRequest();
                     }
                 }
-                catch
-                {
-                    return Unauthorized();
-                }
+                return Unauthorized();
             }
         }
     }
@@ -223,22 +221,23 @@ namespace ProjektWebApi.Controllers
                     return BadRequest();
                 }
 
-                MyUser user;
-                var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
-                var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
-                var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
-                var username = credentials[0];
-                user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+                var user = await _userManager.GetUserAsync(User);
 
                 if (user != null)
                 {
                     try
                     {
-                        var geoMessage = new GeoMessage();
-                        var message = new Message { Title = newGeoMessage.Message.Title, Author = user.FirstName + " " + user.LastName, Body = newGeoMessage.Message.Body };
-                        geoMessage.Message = message;
-                        geoMessage.Latitude = newGeoMessage.Latitude;
-                        geoMessage.Longitude = newGeoMessage.Longitude;
+                        var geoMessage = new GeoMessage
+                        {
+                            Message = new Message
+                            {
+                                Title = newGeoMessage.Message.Title,
+                                Author = user.FirstName + " " + user.LastName,
+                                Body = newGeoMessage.Message.Body
+                            },
+                            Latitude = newGeoMessage.Latitude,
+                            Longitude = newGeoMessage.Longitude
+                        };
                         await _context.GeoMessages.AddAsync(geoMessage);
                         await _context.SaveChangesAsync();
                         return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);

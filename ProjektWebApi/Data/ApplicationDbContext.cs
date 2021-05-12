@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using ProjektWebApi.Models;
@@ -24,10 +18,10 @@ namespace ProjektWebApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            SeedUsers(modelBuilder);
+            Seed(modelBuilder);
         }
 
-        private static void SeedUsers(ModelBuilder modelBuilder)
+        private static void Seed(ModelBuilder modelBuilder)
         {
             var messageOne = new
             {
@@ -69,18 +63,17 @@ namespace ProjektWebApi.Data
 
             modelBuilder.Entity<GeoMessage>().HasData(geoMessageTwo);
 
+            string password = "test123";
+            PasswordHasher passwordHasher = new PasswordHasher();
+            var hashedPassword = passwordHasher.HashPassword(password);
+
             MyUser user = new MyUser()
             {
                 UserName = "testuser",
                 FirstName = "Test",
                 LastName = "Testsson",
+                PasswordHash = hashedPassword
             };
-
-            string password = "test123";
-
-            PasswordHasher passwordHasher = new PasswordHasher();
-            var hashedPassword = passwordHasher.HashPassword(password);
-            user.PasswordHash = hashedPassword;
 
             modelBuilder.Entity<MyUser>().HasData(user);
         }

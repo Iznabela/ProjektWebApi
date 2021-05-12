@@ -1,21 +1,14 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ProjektWebApi.Data;
-using Microsoft.EntityFrameworkCore;
 using ProjektWebApi.Models;
-using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace ProjektWebApi
 {
@@ -33,6 +26,7 @@ namespace ProjektWebApi
         {
 
             services.AddControllers();
+
             services.AddApiVersioning(o =>
             {
                 o.DefaultApiVersion = new ApiVersion(2, 0);
@@ -52,6 +46,7 @@ namespace ProjektWebApi
                 o.SwaggerDoc("v2", new OpenApiInfo { Title = "ProjektWebApi", Version = "v2.0" });
                 o.EnableAnnotations();
             });
+
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
 
