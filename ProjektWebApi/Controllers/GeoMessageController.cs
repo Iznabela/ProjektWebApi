@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http.Headers;
 using System.Text;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ProjektWebApi.Controllers
 {
@@ -59,6 +60,7 @@ namespace ProjektWebApi.Controllers
                 return NotFound();
             }
 
+            [Route("GetGeoMessages")]
             [HttpGet]
             public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
             {
@@ -95,11 +97,10 @@ namespace ProjektWebApi.Controllers
                     var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
                     var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
                     var username = credentials[0];
+                    user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
 
                     try
                     {
-                        user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
-
                         var geoMessage = new GeoMessage();
                         var message = new Message { Title = "Unknown Title", Author = user.FirstName + " " + user.LastName, Body = newGeoMessage.Message };
                         geoMessage.Message = message;
@@ -116,7 +117,7 @@ namespace ProjektWebApi.Controllers
                 }
                 catch
                 {
-                    return BadRequest();
+                    return Unauthorized();
                 }
             }
 
@@ -168,8 +169,13 @@ namespace ProjektWebApi.Controllers
 
             [Route("GetGeoMessage")]
             [HttpGet]
-            [ProducesResponseType(StatusCodes.Status200OK)]
-            [ProducesResponseType(StatusCodes.Status404NotFound)]
+            [SwaggerOperation(
+                Summary = "Find a geo-message",
+                Description = "Finding a geo-message based on ID"
+                )]
+            [SwaggerResponse(200, "Geo-message based on ID was returned successfully")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
+            [SwaggerResponse(404, "Could not find geo-message with supplied ID")]
             public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
                 try
@@ -188,8 +194,20 @@ namespace ProjektWebApi.Controllers
                 return NotFound();
             }
 
+            [Route("GetGeoMessages")]
             [HttpGet]
-            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages(double? minLon, double? minLat, double? maxLon, double? maxLat)
+            [SwaggerOperation(
+                Summary = "Get multiple geo-messages",
+                Description = "if no numbers are entered, all geo-messages are returned"
+                )]
+            [SwaggerResponse(200, "Geo-messages were returned successfully")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
+            [SwaggerResponse(404, "Could not find geo-messages within range")]
+            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages(
+                [FromQuery, SwaggerParameter("Minimum longitude", Required = false)] double? minLon,
+                [FromQuery, SwaggerParameter("Maximum longitude", Required = false)] double? maxLon,
+                [FromQuery, SwaggerParameter("Minimum Latitude", Required = false)] double? minLat,
+                [FromQuery, SwaggerParameter("Maximum Latitude", Required = false)] double? maxLat)
             {
                 try
                 {
@@ -225,6 +243,13 @@ namespace ProjektWebApi.Controllers
             [Authorize]
             [Route("CreateGeoMessage")]
             [HttpPost]
+            [SwaggerOperation(
+                Summary = "Create a geo-message",
+                Description = "Creating a geo-message based on specified data - requires authentication"
+                )]
+            [SwaggerResponse(201, "Geo-message was created successfully")]
+            [SwaggerResponse(401, "Incorrect username or password")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
             public async Task<IActionResult> CreateGeoMessage(GeoMessage newGeoMessage)
             {
                 if (String.IsNullOrWhiteSpace(newGeoMessage.Message.Title))
@@ -232,24 +257,45 @@ namespace ProjektWebApi.Controllers
                     return BadRequest();
                 }
 
-                try
+                MyUser user;
+                var authHeader = AuthenticationHeaderValue.Parse(Request.Headers["Authorization"]);
+                var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
+                var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
+                var username = credentials[0];
+                user = await _userManager.Users.Where(u => u.UserName == username).FirstOrDefaultAsync();
+
+                if (user != null)
                 {
-                    var geoMessage = new GeoMessage();
-                    geoMessage.Message = newGeoMessage.Message;
-                    geoMessage.Latitude = newGeoMessage.Latitude;
-                    geoMessage.Longitude = newGeoMessage.Longitude;
-                    await _context.GeoMessages.AddAsync(newGeoMessage);
-                    await _context.SaveChangesAsync();
-                    return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
+                    try
+                    {
+                        var geoMessage = new GeoMessage();
+                        var message = new Message { Title = newGeoMessage.Message.Title, Author = newGeoMessage.Message.Author, Body = newGeoMessage.Message.Body };
+                        geoMessage.Message = message;
+                        geoMessage.Latitude = newGeoMessage.Latitude;
+                        geoMessage.Longitude = newGeoMessage.Longitude;
+                        await _context.GeoMessages.AddAsync(geoMessage);
+                        await _context.SaveChangesAsync();
+                        return CreatedAtAction(nameof(GetGeoMessage), new { id = geoMessage.Id }, geoMessage);
+                    }
+                    catch
+                    {
+                        return BadRequest();
+                    }
                 }
-                catch
+                else
                 {
-                    return BadRequest();
+                    return Unauthorized();
                 }
             }
 
             [Route("RegisterUser")]
             [HttpPost]
+            [SwaggerOperation(
+                Summary = "Register User",
+                Description = "Registration is required for parts of API"
+                )]
+            [SwaggerResponse(200, "User was registred successfully")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
             public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName, string password)
             {
                 if (String.IsNullOrWhiteSpace(userName))

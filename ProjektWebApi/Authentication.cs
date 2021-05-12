@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ProjektWebApi.Data;
 using ProjektWebApi.Models;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,6 +75,8 @@ namespace ProjektWebApi
 
             return AuthenticateResult.Success(ticket);
         }
+
+        [SwaggerResponse(401, "Incorrect username or password")]
         protected override Task HandleChallengeAsync(AuthenticationProperties properties)
         {
             Response.StatusCode = 401;
