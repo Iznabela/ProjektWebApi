@@ -46,16 +46,16 @@ namespace ProjektWebApi
                 o.SubstituteApiVersionInUrl = true;
             });
 
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(o =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjektWebApi", Version = "v1.0" });
-                c.SwaggerDoc("v2", new OpenApiInfo { Title = "ProjektWebApi", Version = "v2.0" });
+                o.SwaggerDoc("v1", new OpenApiInfo { Title = "ProjektWebApi", Version = "v1.0" });
+                o.SwaggerDoc("v2", new OpenApiInfo { Title = "ProjektWebApi", Version = "v2.0" });
+                o.EnableAnnotations();
             });
             services.AddDbContext<ApplicationDbContext>(options => 
             options.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GeoMessages"));
 
-            services.AddDefaultIdentity<MyUser>(options =>
-            options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddDefaultIdentity<MyUser>().AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddAuthentication("MyAuth")
               .AddScheme<AuthenticationSchemeOptions, Authentication>("MyAuth", null);

@@ -22,8 +22,46 @@ namespace ProjektWebApi.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-        }
 
-      
+            var messageOne = new
+            {
+                Id = 1,
+                Title = "Bellas place",
+                Body = "Här bor Bella! Stay away",
+                Author = "Unknown Author"
+            };
+
+            var messageTwo = new
+            {
+                Id = 2,
+                Title = "Andra långgatan",
+                Body = "Bästa stället att dricka öl!",
+                Author = "Unknown Author"
+            };
+
+            var geoMessageOne = new
+            {
+                Id = 1,
+                Longitude = 57.873718295961204,
+                Latitude = 11.970617969653047,
+                MessageId = 1
+            };
+
+            var geoMessageTwo = new
+            {
+                Id = 2,
+                Longitude = 57.699100041459346,
+                Latitude = 11.946499084988522,
+                MessageId = 2
+            };
+
+            modelBuilder.Entity<Message>().HasData(messageOne);
+
+            modelBuilder.Entity<Message>().HasData(messageTwo);
+
+            modelBuilder.Entity<GeoMessage>().HasData(geoMessageOne);
+
+            modelBuilder.Entity<GeoMessage>().HasData(geoMessageTwo);
+        }
     }
 }
