@@ -39,6 +39,14 @@ namespace ProjektWebApi.Data
                 Author = "Unknown Author"
             };
 
+            var messageThree = new
+            {
+                Id = 3,
+                Title = "Den fulla gatan",
+                Body = "1L Vodka för 10kr!",
+                Author = "Unknown Author"
+            };
+
             var geoMessageOne = new
             {
                 Id = 1,
@@ -55,13 +63,26 @@ namespace ProjektWebApi.Data
                 MessageId = 2
             };
 
+            var geoMessageThree = new
+            {
+                Id = 3,
+                Longitude = 66.66666666666666,
+                Latitude = 99.999999999999999,
+                MessageId = 3
+            };
+
+
             modelBuilder.Entity<Message>().HasData(messageOne);
 
             modelBuilder.Entity<Message>().HasData(messageTwo);
 
+            modelBuilder.Entity<Message>().HasData(messageThree);
+
             modelBuilder.Entity<GeoMessage>().HasData(geoMessageOne);
 
             modelBuilder.Entity<GeoMessage>().HasData(geoMessageTwo);
+
+            modelBuilder.Entity<GeoMessage>().HasData(geoMessageThree);
         }
     }
 }
