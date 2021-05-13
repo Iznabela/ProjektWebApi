@@ -190,6 +190,13 @@ namespace ProjektWebApi.Migrations
                             Latitude = 11.946499084988522,
                             Longitude = 57.699100041459346,
                             MessageId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Latitude = 100.0,
+                            Longitude = 66.666666666666657,
+                            MessageId = 3
                         });
                 });
 
@@ -227,6 +234,13 @@ namespace ProjektWebApi.Migrations
                             Author = "Unknown Author",
                             Body = "Bästa stället att dricka öl!",
                             Title = "Andra långgatan"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "Unknown Author",
+                            Body = "1L Vodka för 10kr!",
+                            Title = "Den fulla gatan"
                         });
                 });
 
@@ -303,16 +317,16 @@ namespace ProjektWebApi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "0838308e-20b1-49dc-984d-e79e64df3a1d",
+                            Id = "137d16aa-f263-4f0c-9cd5-e518f200a598",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "15363692-7181-4372-9eaa-8c33aa943332",
+                            ConcurrencyStamp = "34c52cf2-97d5-44df-a2ed-dbcbf6ac3b0c",
                             EmailConfirmed = false,
                             FirstName = "Test",
                             LastName = "Testsson",
                             LockoutEnabled = false,
-                            PasswordHash = "AE5KKzLL1+U4YMEKVVvX/t8oSepjsfxAhwX/GpYvK1PckogPmCMhc+t1CMXZNpTzYg==",
+                            PasswordHash = "ADL0KeCziwR9lU1gS2nrC1cJy9Go4HZTqpX7pOMO4i1FUUL9TXJ48kBQJwL8y/YiGQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0198fd72-b697-4ca2-9d82-bf680b3920ec",
+                            SecurityStamp = "5dc43e63-37f8-4523-b437-2f80664ba4de",
                             TwoFactorEnabled = false,
                             UserName = "testuser"
                         });

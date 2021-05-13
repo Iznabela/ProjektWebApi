@@ -28,7 +28,6 @@ namespace ProjektWebApi.Migrations
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -50,18 +49,18 @@ namespace ProjektWebApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "GeoMessage",
+                name: "Message",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Message = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Longitude = table.Column<double>(type: "float", nullable: false),
-                    Latitude = table.Column<double>(type: "float", nullable: false)
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Body = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Author = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GeoMessage", x => x.Id);
+                    table.PrimaryKey("PK_Message", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -170,6 +169,57 @@ namespace ProjektWebApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "GeoMessages",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MessageId = table.Column<int>(type: "int", nullable: true),
+                    Longitude = table.Column<double>(type: "float", nullable: false),
+                    Latitude = table.Column<double>(type: "float", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GeoMessages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GeoMessages_Message_MessageId",
+                        column: x => x.MessageId,
+                        principalTable: "Message",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { "137d16aa-f263-4f0c-9cd5-e518f200a598", 0, "34c52cf2-97d5-44df-a2ed-dbcbf6ac3b0c", null, false, "Test", "Testsson", false, null, null, null, "ADL0KeCziwR9lU1gS2nrC1cJy9Go4HZTqpX7pOMO4i1FUUL9TXJ48kBQJwL8y/YiGQ==", null, false, "5dc43e63-37f8-4523-b437-2f80664ba4de", false, "testuser" });
+
+            migrationBuilder.InsertData(
+                table: "Message",
+                columns: new[] { "Id", "Author", "Body", "Title" },
+                values: new object[,]
+                {
+                    { 1, "Unknown Author", "Här bor Bella! Stay away", "Bellas place" },
+                    { 2, "Unknown Author", "Bästa stället att dricka öl!", "Andra långgatan" },
+                    { 3, "Unknown Author", "1L Vodka för 10kr!", "Den fulla gatan" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "GeoMessages",
+                columns: new[] { "Id", "Latitude", "Longitude", "MessageId" },
+                values: new object[] { 1, 11.970617969653047, 57.873718295961204, 1 });
+
+            migrationBuilder.InsertData(
+                table: "GeoMessages",
+                columns: new[] { "Id", "Latitude", "Longitude", "MessageId" },
+                values: new object[] { 2, 11.946499084988522, 57.699100041459346, 2 });
+
+            migrationBuilder.InsertData(
+                table: "GeoMessages",
+                columns: new[] { "Id", "Latitude", "Longitude", "MessageId" },
+                values: new object[] { 3, 100.0, 66.666666666666657, 3 });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -208,6 +258,11 @@ namespace ProjektWebApi.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GeoMessages_MessageId",
+                table: "GeoMessages",
+                column: "MessageId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -228,13 +283,16 @@ namespace ProjektWebApi.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "GeoMessage");
+                name: "GeoMessages");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Message");
         }
     }
 }

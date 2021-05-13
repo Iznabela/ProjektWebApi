@@ -37,6 +37,13 @@ namespace ProjektWebApi.Controllers
 
             [Route("{id}")]
             [HttpGet]
+            [SwaggerOperation(
+                Summary = "Find a geo-message",
+                Description = "Finding a geo-message based on ID"
+                )]
+            [SwaggerResponse(200, Description = "Geo-message based on ID was returned successfully")]
+            [SwaggerResponse(400, Description = "Something went wrong with the request")]
+            [SwaggerResponse(404, Description = "Could not find geo-message with supplied ID")]
             public async Task<ActionResult<GeoMessage>> GetGeoMessage(int? id)
             {
                 try
@@ -57,7 +64,19 @@ namespace ProjektWebApi.Controllers
             }
 
             [HttpGet]
-            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
+            [SwaggerOperation(
+                Summary = "Get multiple geo-messages",
+                Description = "if no numbers are entered, all geo-messages are returned"
+                )]
+            [SwaggerResponse(200, "Geo-messages were returned successfully")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
+            [SwaggerResponse(404, "Could not find geo-messages within range")]
+            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages(
+                [FromQuery, SwaggerParameter("Minimum longitude", Required = false)] double? minLon,
+                [FromQuery, SwaggerParameter("Maximum longitude", Required = false)] double? maxLon,
+                [FromQuery, SwaggerParameter("Minimum Latitude", Required = false)] double? minLat,
+                [FromQuery, SwaggerParameter("Maximum Latitude", Required = false)] double? maxLat)
+
             {
                 try
                 {
@@ -77,6 +96,13 @@ namespace ProjektWebApi.Controllers
 
             [Authorize]
             [HttpPost]
+            [SwaggerOperation(
+                Summary = "Create a geo-message",
+                Description = "Creating a geo-message based on specified data - requires authentication"
+                )]
+            [SwaggerResponse(201, "Geo-message was created successfully", typeof(GeoMessage))]
+            [SwaggerResponse(401, "Incorrect username or password")]
+            [SwaggerResponse(400, "Something went wrong with the request")]
             public async Task<IActionResult> CreateGeoMessage(GeoMassageDTO newGeoMessage)
             {
                 if (String.IsNullOrWhiteSpace(newGeoMessage.Message))

@@ -10,7 +10,7 @@ using ProjektWebApi.Data;
 namespace ProjektWebApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20210509192431_uno")]
+    [Migration("20210513104650_uno")]
     partial class uno
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -169,12 +169,81 @@ namespace ProjektWebApi.Migrations
                     b.Property<double>("Longitude")
                         .HasColumnType("float");
 
-                    b.Property<string>("Message")
+                    b.Property<int?>("MessageId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MessageId");
+
+                    b.ToTable("GeoMessages");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Latitude = 11.970617969653047,
+                            Longitude = 57.873718295961204,
+                            MessageId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Latitude = 11.946499084988522,
+                            Longitude = 57.699100041459346,
+                            MessageId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Latitude = 100.0,
+                            Longitude = 66.666666666666657,
+                            MessageId = 3
+                        });
+                });
+
+            modelBuilder.Entity("ProjektWebApi.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Author")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GeoMessage");
+                    b.ToTable("Message");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Author = "Unknown Author",
+                            Body = "Här bor Bella! Stay away",
+                            Title = "Bellas place"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Author = "Unknown Author",
+                            Body = "Bästa stället att dricka öl!",
+                            Title = "Andra långgatan"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Author = "Unknown Author",
+                            Body = "1L Vodka för 10kr!",
+                            Title = "Den fulla gatan"
+                        });
                 });
 
             modelBuilder.Entity("ProjektWebApi.Models.MyUser", b =>
@@ -228,9 +297,6 @@ namespace ProjektWebApi.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Token")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -249,6 +315,23 @@ namespace ProjektWebApi.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "137d16aa-f263-4f0c-9cd5-e518f200a598",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "34c52cf2-97d5-44df-a2ed-dbcbf6ac3b0c",
+                            EmailConfirmed = false,
+                            FirstName = "Test",
+                            LastName = "Testsson",
+                            LockoutEnabled = false,
+                            PasswordHash = "ADL0KeCziwR9lU1gS2nrC1cJy9Go4HZTqpX7pOMO4i1FUUL9TXJ48kBQJwL8y/YiGQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "5dc43e63-37f8-4523-b437-2f80664ba4de",
+                            TwoFactorEnabled = false,
+                            UserName = "testuser"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -300,6 +383,15 @@ namespace ProjektWebApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ProjektWebApi.Models.GeoMessage", b =>
+                {
+                    b.HasOne("ProjektWebApi.Models.Message", "Message")
+                        .WithMany()
+                        .HasForeignKey("MessageId");
+
+                    b.Navigation("Message");
                 });
 #pragma warning restore 612, 618
         }

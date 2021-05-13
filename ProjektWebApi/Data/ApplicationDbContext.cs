@@ -82,6 +82,8 @@ namespace ProjektWebApi.Data
 
             modelBuilder.Entity<GeoMessage>().HasData(geoMessageTwo);
 
+            modelBuilder.Entity<GeoMessage>().HasData(geoMessageThree);
+
             string password = "test123";
             PasswordHasher passwordHasher = new PasswordHasher();
             var hashedPassword = passwordHasher.HashPassword(password);
