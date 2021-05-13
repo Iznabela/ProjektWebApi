@@ -1,17 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ProjektWebApi.Data;
 using ProjektWebApi.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using System.Net.Http.Headers;
-using System.Text;
-using Swashbuckle.AspNetCore.Annotations;
+using System;
+using System.Threading.Tasks;
 
 namespace ProjektWebApi.Controllers
 {
@@ -39,10 +30,13 @@ namespace ProjektWebApi.Controllers
 
             try
             {
-                MyUser newUser = new MyUser();
-                newUser.FirstName = firstName;
-                newUser.LastName = lastName;
-                newUser.UserName = userName;
+                MyUser newUser = new MyUser
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    UserName = userName,
+                };
+
                 newUser.PasswordHash = _userManager.PasswordHasher.HashPassword(newUser, password);
 
                 await _userManager.CreateAsync(newUser);

@@ -20,20 +20,17 @@ namespace ProjektWebApi
     public class Authentication : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private UserManager<MyUser> _userManager;
-        private ApplicationDbContext _context;
 
         public Authentication(
             IOptionsMonitor<AuthenticationSchemeOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            UserManager<MyUser> userManager,
-            ApplicationDbContext context)
+            UserManager<MyUser> userManager)
 
             : base(options, logger, encoder, clock)
         {
             _userManager = userManager;
-            _context = context;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
