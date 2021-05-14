@@ -65,17 +65,13 @@ namespace ProjektWebApi.Controllers
 
             [HttpGet]
             [SwaggerOperation(
-                Summary = "Get multiple geo-messages",
-                Description = "if no numbers are entered, all geo-messages are returned"
+                Summary = "Get geo-messages",
+                Description = "Excute to get all geo-messages"
                 )]
             [SwaggerResponse(200, "Geo-messages were returned successfully")]
-            [SwaggerResponse(400, "Something went wrong with the request")]
-            [SwaggerResponse(404, "Could not find geo-messages within range")]
-            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages(
-                [FromQuery, SwaggerParameter("Minimum longitude", Required = false)] double? minLon,
-                [FromQuery, SwaggerParameter("Maximum longitude", Required = false)] double? maxLon,
-                [FromQuery, SwaggerParameter("Minimum Latitude", Required = false)] double? minLat,
-                [FromQuery, SwaggerParameter("Maximum Latitude", Required = false)] double? maxLat)
+            [SwaggerResponse(400, "Something went wrong")]
+            [SwaggerResponse(404, "Could not find geo-messages")]
+            public async Task<ActionResult<ICollection<GeoMessage>>> GetGeoMessages()
 
             {
                 try
