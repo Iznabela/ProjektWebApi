@@ -139,7 +139,7 @@ namespace ProjektWebApi.Controllers
 
     namespace V2
     {
-        [Route("api/v{version:apiVersion}/[controller]")]
+        [Route("api/v{version:apiVersion}/geo-comments")]
         [ApiController]
         [ApiVersion("2.0")]
         public class GeoMessageController : ControllerBase
@@ -153,7 +153,7 @@ namespace ProjektWebApi.Controllers
                 _userManager = userManager;
             }
 
-            [Route("GetGeoMessage")]
+            [Route("{id}")]
             [HttpGet]
             [SwaggerOperation(
                 Summary = "Find a geo-message",
@@ -180,7 +180,6 @@ namespace ProjektWebApi.Controllers
                 return NotFound();
             }
 
-            [Route("GetGeoMessages")]
             [HttpGet]
             [SwaggerOperation(
                 Summary = "Get geo-messages",
@@ -227,7 +226,6 @@ namespace ProjektWebApi.Controllers
             }
 
             [Authorize]
-            [Route("CreateGeoMessage")]
             [HttpPost]
             [SwaggerOperation(
                 Summary = "Create a geo-message",
