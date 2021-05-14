@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ProjektWebApi.Data;
 using ProjektWebApi.Models;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
@@ -9,7 +10,6 @@ namespace ProjektWebApi.Controllers
 {
     [Route("api/v{version:apiVersion}/register-user")]
     [ApiController]
-
     [ApiVersion("1.0")]
     [ApiVersion("2.0")]
 
@@ -24,12 +24,18 @@ namespace ProjektWebApi.Controllers
 
         [HttpPost]
         [SwaggerOperation(
-                Summary = "Register a user"
+                Summary = "Register a user",
+                Description = "Fill in credentials to create an account"
                 )]
-        public async Task<IActionResult> RegisterUser(string firstName, string lastName, string userName,
-            [FromQuery, SwaggerParameter("you can use letters, numbers and periods", Required = false)] string password)
+        [SwaggerResponse(201, "User was registered successfully", typeof(MyUser))]
+        [SwaggerResponse(400, "Something went wrong with the request")]
+        public async Task<IActionResult> RegisterUser(
+            [FromQuery, SwaggerParameter("First Name", Required = true)] string firstName,
+            [FromQuery, SwaggerParameter("Last Name", Required = true)] string lastName,
+            [FromQuery, SwaggerParameter("Username", Required = true)] string userName,
+            [FromQuery, SwaggerParameter("Password - you can use letters, numbers and periods", Required = true)] string password)
         {
-            if (String.IsNullOrWhiteSpace(userName))
+            if (String.IsNullOrWhiteSpace(userName) || String.IsNullOrWhiteSpace(firstName) || String.IsNullOrWhiteSpace(lastName) || String.IsNullOrWhiteSpace(password))
             {
                 return BadRequest();
             }
@@ -47,7 +53,7 @@ namespace ProjektWebApi.Controllers
 
                 await _userManager.CreateAsync(newUser);
 
-                return Ok();
+                return CreatedAtAction(nameof(RegisterUser), new { id = newUser.Id }, newUser);
 
             }
             catch (Exception exception)

@@ -183,7 +183,7 @@ namespace ProjektWebApi.Controllers
             [Route("GetGeoMessages")]
             [HttpGet]
             [SwaggerOperation(
-                Summary = "Get multiple geo-messages",
+                Summary = "Get geo-messages",
                 Description = "if no numbers are entered, all geo-messages are returned"
                 )]
             [SwaggerResponse(200, "Geo-messages were returned successfully")]
